@@ -1,0 +1,7 @@
+{
+    "session_dutration": 300,
+    "load_query" : ["load_query.txt"],
+	"clean_query" : ["clean_query.txt"],
+	"action_ids" : [3, 17, 54, 103, 102, 95, 56],
+	"pay_actions": [37, 29]
+}

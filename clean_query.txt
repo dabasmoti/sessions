@@ -1,0 +1,64 @@
+insert into   `clean_data.sessions`  
+SELECT
+  reqs.session_id, 
+uid,
+sso_id,
+device,
+reqs.request_id ,
+first_time, 
+last_time, 
+duration,
+total_pages,
+home_rate,
+  STRUCT( unique_articles, promotions as unique_promotion_session,
+    non_consectutive_home) AS unique_num_of_pages,
+  utm_source,  utm_medium,utm_campaign, utm_content,   referrer_content, referrer_platform, campaign_name, first_anonymous_id, num_anonymous_id, first_platform, n_platform, first_brand, last_brand, n_brands, country,
+    first_user_type, last_user_type, registration,
+     STRUCT(  article,
+              author,
+              home,
+              login,
+              misc,
+              other,
+              promotions,
+              quote,
+              section,
+               tag )AS page_types,
+     STRUCT( article_id,
+             article_type,
+              url_primary_section, 
+              url_secondary_section, 
+              page_in_sess) as first_article,
+     STRUCT(article_id_last,
+            article_type_last,
+            url_primary_section_last,
+            url_secondary_section_last,
+            page_in_sess_last) as last_article,
+                 n_premium,
+     n_openmode,
+n_page,
+feature,
+pur_brand,
+sale_code,
+promotions_no,
+purchase_platform,
+ proms.promotions_page_nums as promotions_page_nums
+
+FROM
+  `analysts_playground.sessions` sess
+left join 
+(SELECT 
+session_id,
+array_agg(requests.item) request_id
+FROM `htz-common.analysts_playground.sessions`, unnest( request_id.list) requests
+group by session_id) reqs
+on 
+sess.session_id = reqs.session_id
+left join
+(SELECT 
+session_id,
+array_agg(prom.item) promotions_page_nums
+FROM `htz-common.analysts_playground.sessions`, unnest( promotions_page_nums.list) prom
+group by session_id) proms
+on 
+sess.session_id = proms.session_id

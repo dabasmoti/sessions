@@ -1,0 +1,28 @@
+SELECT request_id, 
+	(case when r.uid is null then 0 else r.uid end) as uid,  
+	event_time,
+       record_type, anonymous_id, (case when r.sso_id is null then 0 else r.sso_id end) as sso_id,
+       user_type, brand, page_type, r.article_id, 
+       article_type, premium, openmode,
+      (case when ar.super_content is null then false else ar.super_content end) as super_content,
+       url_primary_section, url_secondary_section,
+       url, r.platform, os,
+       country, 
+       utm_source, utm_medium, utm_campaign, utm_content,
+          referrer_type,
+       referrer_platform, referrer_content, action_id, action_name,
+       feature, feature_type, campaign_name, campaign_details,device_name,
+       p.pur_brand ,p.sale_code,p.promotions_no,p.platform as purchase_platform
+FROM `htz-common.clean_data.requests` r
+left join (SELECT distinct article_id,min(super_content) as super_content    FROM `htz-common.raw_data.articles` group by article_id   ) ar
+on 
+r.article_id = ar.article_id
+left join (select sso_id,
+ brand as pur_brand,
+(case when sale_code is null then 0 else sale_code end) as sale_code,
+(case when promotions_no is null then 0 else promotions_no end) as promotions_no  ,
+platform from `htz-common.clean_data.purchases` 
+where  DATE(event_time) = '{0}' and record_type = 'Subscription') p
+on r.sso_id = p.sso_id
+WHERE DATE(event_time) = '{0}'
+order by uid,device_name,event_time
