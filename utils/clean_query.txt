@@ -1,0 +1,27 @@
+import numpy as np
+def agg_config():
+    agg_dict = ({'uid':'first',
+             'request_id':'unique',
+             'sso_id':'first',
+             'event_time':['min','max'],
+             'session_duration':'sum',
+             'device_name':['first','last'],
+             'article_id' :['nunique'],
+             'utm_medium' : 'first',
+             'utm_content' : 'first',
+             'utm_source' : 'first',
+             'utm_campaign' : 'first',
+             'referrer_content':'first',
+             'referrer_platform' : 'first',
+             'campaign_name' : 'first', 
+             'anonymous_id':['first','nunique'],
+             'platform':['first','nunique'],
+             'brand':['first','last','nunique'],
+             'country':['first'],
+             'user_type':['first','last'],
+             'action_id':lambda x: np.argmax((x==61).values),
+             'premium':'sum',
+             'openmode':'sum',
+             'super_content':'sum',
+             'subscription':lambda x: np.argmax((x==1).values)})
+    return agg_dict
